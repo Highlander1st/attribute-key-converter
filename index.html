@@ -3,17 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Attribute Key Converter</title>
+  <title>Fortnite Blueprint Attributes</title>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-  <h1>Attribute Key Converter</h1>
+  <h1>Blueprint Attributes</h1>
 
   <input type="file" id="fileInput" accept=".json">
   <button id="convertButton">Convert</button>
-  <button id="copyButton">📋 Copy to Clipboard</button>
+  <button id="copyButton">📋 Copy Attribute Keys</button>
 
+  <h2>🎯 Attribute Keys</h2>
   <textarea id="outputBox" placeholder="Converted attributes will appear here..."></textarea>
+
+  <h2>📘 Blueprint Name</h2>
+  <textarea id="blueprintNameBox" readonly placeholder="Will be extracted..."></textarea>
+  <button onclick="copyField('blueprintNameBox')">📋 Copy</button>
+
+  <h2>📂 Parent Class</h2>
+  <textarea id="parentClassBox" readonly placeholder="Will be extracted..."></textarea>
+  <button onclick="copyField('parentClassBox')">📋 Copy</button>
+
+  <h2>🧱 Static Mesh</h2>
+  <textarea id="staticMeshBox" readonly placeholder="Will be extracted..."></textarea>
+  <button onclick="copyField('staticMeshBox')">📋 Copy</button>
 
   <script src="script.js"></script>
 </body>

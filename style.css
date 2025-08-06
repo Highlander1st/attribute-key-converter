@@ -21,3 +21,12 @@ input, button, textarea {
 textarea {
   height: 200px;
 }
+label {
+  font-weight: bold;
+  margin-top: 20px;
+  display: block;
+}
+
+textarea[readonly] {
+  background-color: #eaeaea;
+}
