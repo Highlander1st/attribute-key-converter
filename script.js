@@ -14,6 +14,7 @@ document.getElementById('convertButton').addEventListener('click', () => {
       let blueprintName = "";
       let parentClass = "";
       let staticMesh = "";
+      let resourceType = "";
 
       json.forEach(entry => {
         // ✅ Blueprint Name
@@ -21,22 +22,19 @@ document.getElementById('convertButton').addEventListener('click', () => {
           blueprintName = entry.Name.replace(/_C$/, "");
         }
 
-        // ✅ Parent Class - multiple strategies
+        // ✅ Parent Class (Super, Template, or SuperStruct fallback)
         if (!parentClass && entry.Type === "BlueprintGeneratedClass") {
-          // Primary: Super.ObjectName
           const superObj = entry.Super?.ObjectName;
           if (superObj && superObj.includes("'")) {
             const inner = superObj.split("'")[1];
             parentClass = inner.replace(/Default__/, "").replace(/_C$/, "");
           }
 
-          // Fallback: Template.ObjectName
           if (!parentClass && entry.Template?.ObjectName) {
             const template = entry.Template.ObjectName.split("'")[0];
             parentClass = template.replace(/Default__/, "").replace(/_C$/, "");
           }
 
-          // Final Fallback: SuperStruct.ObjectName
           if (!parentClass && entry.SuperStruct?.ObjectName) {
             const structObj = entry.SuperStruct.ObjectName;
             const match = structObj.match(/'(.+?)'/);
@@ -48,12 +46,26 @@ document.getElementById('convertButton').addEventListener('click', () => {
           }
         }
 
-        // ✅ Static Mesh (from StaticMeshComponent0)
+        // ✅ Static Mesh
         if (!staticMesh && entry.Type === "StaticMeshComponent" && entry.Name === "StaticMeshComponent0") {
           const meshObj = entry.Properties?.StaticMesh?.ObjectName;
           if (meshObj) {
             const match = meshObj.match(/'(.*?)'/);
             if (match) staticMesh = match[1];
+          }
+        }
+
+        // ✅ Resource Type (search all values for EFortResourceType::...)
+        if (!resourceType && entry.Properties) {
+          for (const key in entry.Properties) {
+            const value = entry.Properties[key];
+            if (typeof value === "string" && value.includes("EFortResourceType::")) {
+              const match = value.match(/EFortResourceType::(\w+)/);
+              if (match) {
+                resourceType = match[1];
+                break;
+              }
+            }
           }
         }
 
@@ -71,16 +83,15 @@ document.getElementById('convertButton').addEventListener('click', () => {
         });
       });
 
-      // ✅ Final Attribute Format
       const attrOutput = attributes.length > 0
         ? `(${attributes.join(",")})`
         : "No AttributeInitKeys found.";
 
-      // ✅ Display outputs
       document.getElementById("outputBox").value = attrOutput;
       document.getElementById("blueprintNameBox").value = blueprintName || "Not found";
       document.getElementById("parentClassBox").value = parentClass || "Not found";
       document.getElementById("staticMeshBox").value = staticMesh || "Not found";
+      document.getElementById("resourceTypeBox").value = resourceType || "Not found";
 
     } catch (e) {
       alert("Error processing file. Make sure it's a valid JSON.");
@@ -91,7 +102,7 @@ document.getElementById('convertButton').addEventListener('click', () => {
   reader.readAsText(fileInput.files[0]);
 });
 
-// ✅ Copy handler
+// ✅ Copy field by ID
 function copyField(id) {
   const field = document.getElementById(id);
   if (field && field.value) {

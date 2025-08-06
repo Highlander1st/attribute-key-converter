@@ -28,12 +28,6 @@ textarea {
   font-family: monospace;
 }
 
-label {
-  font-weight: bold;
-  margin-top: 20px;
-  display: block;
-}
-
 textarea[readonly] {
   background-color: #eaeaea;
 }
